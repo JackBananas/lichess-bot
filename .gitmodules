@@ -1,0 +1,3 @@
+[submodule "engines/shaila"]
+	path = engines/shaila
+	url = https://github.com/JackBananas/shaila.git
