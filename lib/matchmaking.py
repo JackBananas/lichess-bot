@@ -2,6 +2,7 @@
 import random
 import logging
 import datetime
+import contextlib
 import test_bot.lichess
 from lib import model
 from lib.timer import Timer, seconds, minutes, days, years
@@ -10,7 +11,7 @@ from collections.abc import Sequence
 from lib import lichess
 from lib.config import Configuration
 from typing import Optional, Union
-from lib.types import UserProfileType, PerfType, EventType, FilterType
+from lib.lichess_types import UserProfileType, PerfType, EventType, FilterType
 MULTIPROCESSING_LIST_TYPE = Sequence[model.Challenge]
 DAILY_TIMERS_TYPE = list[Timer]
 LICHESS_TYPE = Union[lichess.Lichess, test_bot.lichess.Lichess]
@@ -145,10 +146,8 @@ class Matchmaking:
         """Update our user profile data, to get our latest rating."""
         if self.last_user_profile_update_time.is_expired():
             self.last_user_profile_update_time.reset()
-            try:
+            with contextlib.suppress(Exception):
                 self.user_profile = self.li.get_profile()
-            except Exception:
-                pass
 
     def get_weights(self, online_bots: list[UserProfileType], rating_preference: str, min_rating: int, max_rating: int,
                     game_type: str) -> list[int]:
